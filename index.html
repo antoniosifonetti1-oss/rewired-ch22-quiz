@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rewired Ch. 22 Quiz</title>
+<style>
+  :root {
+    --bg: #f4f7f8;
+    --card: #ffffff;
+    --ink: #1c2a30;
+    --muted: #5d6f77;
+    --line: #dbe4e7;
+    --accent: #2f6f84;
+    --accent-soft: #e4eff2;
+    --good: #2e7d4f;
+    --good-soft: #e3f3e9;
+    --bad: #b3372f;
+    --bad-soft: #fbe9e7;
+    --warm: #c27a2c;
+    --warm-soft: #fbf0e2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12191c;
+      --card: #1b252a;
+      --ink: #e8eff1;
+      --muted: #94a8b0;
+      --line: #2c3a40;
+      --accent: #6fb6cc;
+      --accent-soft: #1f3640;
+      --good: #6fcf97;
+      --good-soft: #1b3326;
+      --bad: #f08a80;
+      --bad-soft: #3b2220;
+      --warm: #e8a85c;
+      --warm-soft: #382b1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 28px 16px 64px; }
+  .eyebrow { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  h1 { font-size: 28px; line-height: 1.2; margin: 6px 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 22px; }
+  nav { display: flex; gap: 6px; border-bottom: 1px solid var(--line); margin-bottom: 22px; }
+  nav button {
+    background: none; border: 0; padding: 10px 16px; font: inherit; font-weight: 600;
+    color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1px;
+  }
+  nav button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+  nav button:focus-visible, .opt:focus-visible, .btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 18px 20px; margin-bottom: 14px;
+  }
+  .card h2 { margin: 0 0 6px; font-size: 18px; }
+  .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: var(--card);
+    font-size: 14px; font-weight: 700; margin-right: 8px; vertical-align: 1px;
+  }
+  .card p { margin: 6px 0; }
+  .card ul { margin: 6px 0 0; padding-left: 20px; }
+  .card li { margin: 3px 0; }
+  .tag { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .example { background: var(--warm-soft); border-color: transparent; }
+  .example h2 { color: var(--warm); }
+  .flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 10px 0 4px; font-size: 14px; }
+  .flow span { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 3px 11px; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .takeaway { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 10px 14px; border-radius: 6px; margin-top: 10px; }
+
+  /* quiz */
+  .progress { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; margin-bottom: 8px; }
+  .progress div { height: 100%; background: var(--accent); width: 0; transition: width .3s; }
+  .meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 14px; margin-bottom: 14px; }
+  .q { font-size: 19px; font-weight: 650; margin: 0 0 14px; line-height: 1.4; }
+  .opts { display: grid; gap: 10px; }
+  .opt {
+    text-align: left; font: inherit; color: inherit; background: var(--card);
+    border: 2px solid var(--line); border-radius: 10px; padding: 12px 14px; cursor: pointer;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .opt:hover:not(:disabled) { border-color: var(--accent); }
+  .opt .k {
+    flex: none; width: 24px; height: 24px; border-radius: 6px; background: var(--accent-soft); color: var(--accent);
+    font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center;
+  }
+  .opt:disabled { cursor: default; }
+  .opt.correct { border-color: var(--good); background: var(--good-soft); }
+  .opt.wrong { border-color: var(--bad); background: var(--bad-soft); }
+  .opt.dim { opacity: .6; }
+  .feedback { margin-top: 16px; padding: 14px 16px; border-radius: 10px; }
+  .feedback.good { background: var(--good-soft); border-left: 4px solid var(--good); }
+  .feedback.bad { background: var(--bad-soft); border-left: 4px solid var(--bad); }
+  .feedback strong.t { display: block; margin-bottom: 4px; }
+  .feedback .src { display: block; margin-top: 6px; font-size: 13px; color: var(--muted); }
+  .btn {
+    margin-top: 16px; background: var(--accent); color: var(--card); border: 0; font: inherit; font-weight: 650;
+    padding: 11px 22px; border-radius: 10px; cursor: pointer;
+  }
+  .btn.ghost { background: var(--accent-soft); color: var(--accent); margin-left: 8px; }
+  .score { font-size: 52px; font-weight: 800; color: var(--accent); line-height: 1; margin: 4px 0 8px; }
+  .review { list-style: none; padding: 0; margin: 14px 0 0; }
+  .review li { padding: 8px 0; border-top: 1px solid var(--line); display: flex; gap: 10px; }
+  .review .m { flex: none; font-weight: 700; }
+  .review .m.ok { color: var(--good); }
+  .review .m.no { color: var(--bad); }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Rewired · Chapter 22</div>
+  <h1>The art of developing agentic AI solutions</h1>
+  <p class="sub">Study the key ideas, then test yourself with a 5-question quiz.</p>
+
+  <nav role="tablist">
+    <button role="tab" id="tab-study" aria-selected="true" aria-controls="study">Key ideas</button>
+    <button role="tab" id="tab-quiz" aria-selected="false" aria-controls="quiz">Quiz</button>
+  </nav>
+
+  <!-- STUDY -->
+  <section id="study" role="tabpanel" aria-labelledby="tab-study">
+    <div class="card">
+      <h2><span class="num">1</span>Match agents to the right work</h2>
+      <p>Agents are not a yes/no choice; there is a spectrum from traditional automation to agents led by humans (Exhibit 22.2). LLMs excel at summarizing, drafting, classifying, extracting and brainstorming, and struggle with precise multistep math, ambiguity and deterministic, auditable decisions (Exhibit 22.1).</p>
+      <ul>
+        <li><strong>Good fit:</strong> repetitive high-volume workflows, retrieval and synthesis at scale, orchestration across systems, decision support under clear constraints.</li>
+        <li><strong>Poor fit:</strong> ambiguous or strategic decisions, empathy and relationship building, tacit or physical knowledge, high regulatory, legal or safety risk.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">2</span>Constrain agents and feed them good context</h2>
+      <p>Build agents and guardrails at the <strong>task level</strong>, not the global solution level: break the work down as much as possible and give each agent clear instructions. Then pick the right technique for the input:</p>
+      <ul>
+        <li><strong>Prompt engineering:</strong> improves quality without touching the model.</li>
+        <li><strong>Context engineering:</strong> controls everything the model sees (instructions, roles, memory, retrieved data, token budget).</li>
+        <li><strong>RAG:</strong> fetches authoritative, changing content (e.g. internal policy).</li>
+        <li><strong>Fine-tuning:</strong> a scalpel, not a hammer. Use it for narrow, stable behaviors, not for content that changes often.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">3</span>Test early and often</h2>
+      <p>Agents are non-deterministic, so the rule of thumb is <strong>one-third building, two-thirds testing</strong>. New risks include nondeterministic outputs, emergent behaviors, a larger attack surface (prompt injection, jailbreaks, data exfiltration) and autonomous actions.</p>
+      <ul>
+        <li>Define scope, measurable standards and testable red lines; build a high-quality test dataset.</li>
+        <li>Layer your tests: static review → LLM-as-judge → human review → live shadow mode.</li>
+        <li>Test the whole product (latency, handoffs), then monitor continuously with rollback plans.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">4</span>Decide buy vs. build, and design for reuse</h2>
+      <p>Simple task automation is widely available from vendors; complex multi-workflow systems are a source of differentiation and usually need a mix of off-the-shelf and custom agents. Assemble <strong>atomic agents</strong> (one specific task each) under orchestrator and compliance agents, and host them on a central platform so they can be reused.</p>
+      <ul>
+        <li><strong>Six buy/build principles:</strong> value of IP, expediency, reusability, total cost of ownership, customization load, modularity.</li>
+        <li>Focus on how agents communicate, not where they live; share core capabilities but decentralize agent builds; prioritize context quality.</li>
+      </ul>
+    </div>
+
+    <div class="card example">
+      <div class="tag">Company example</div>
+      <h2>Healthcare claims adjudication</h2>
+      <p>Adjudicating a claim means checking claim type, patient history, policies, medical necessity and fraud signals. A single agent doing all of that would pile up reasoning errors, burn tokens and leave no trail to debug. Instead, each task gets its own agent (Exhibit 22.3):</p>
+      <div class="flow">
+        <span>Orchestrator</span><i>→</i>
+        <span>Policy compliance</span><i>·</i>
+        <span>Fraud detection</span><i>·</i>
+        <span>Medical necessity</span><i>→</i>
+        <span>Human specialist review</span><i>→</i>
+        <span>Payment + communication</span>
+      </div>
+      <div class="takeaway">Each task can be scoped, tested and observed on its own, humans review at the right points, and agents (e.g. policy compliance) can be reused in other workflows.</div>
+    </div>
+
+    <button class="btn" id="go-quiz">Start the quiz →</button>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" role="tabpanel" aria-labelledby="tab-quiz" class="hidden">
+    <div id="quiz-body"></div>
+  </section>
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    q: "Why does the chapter recommend splitting claims adjudication into several task-level agents instead of using one agent?",
+    options: [
+      "Each task can be scoped, tested, observed and reused on its own, and humans can be placed where needed",
+      "Multiple agents always cost less than a single agent because they use fewer models",
+      "A single agent cannot read medical documents",
+      "It removes the need for any human review"
+    ],
+    answer: 0,
+    why: "A single agent needs multistep context and reasoning, which adds room for error, uses many tokens and leaves no trail to debug. Task-level agents can be finely tested and tuned, show where humans should review, and be reused (e.g. a policy compliance agent).",
+    src: "Design workflows with 'constrained' agents · Exhibit 22.3"
+  },
+  {
+    q: "Which of these tasks is an LLM-based agent best suited for, according to Exhibit 22.1?",
+    options: [
+      "Multistep quantitative reasoning with precise numbers",
+      "Summarizing long reports, emails or transcripts",
+      "High-stakes decisions that must be deterministic and auditable",
+      "Interpreting engineering diagrams or handwritten notes"
+    ],
+    answer: 1,
+    why: "LLMs excel at summarizing, drafting, classifying, extracting, brainstorming and transforming content. The other three are listed under where LLMs struggle to reach high accuracy.",
+    src: "What agents can (and can't yet) do · Exhibit 22.1"
+  },
+  {
+    q: "What build-to-test ratio does the chapter suggest for agentic workflows, and why?",
+    options: [
+      "Two-thirds building, one-third testing, because agents are mostly code",
+      "Half and half, so the effort is balanced",
+      "One-third building, two-thirds testing, because agents are non-deterministic and unpredictable",
+      "Mostly testing before launch, then no testing once the agent is live"
+    ],
+    answer: 2,
+    why: "Because AI agents are not deterministic or predictable, the burden on testing increases. The chapter also stresses continuous monitoring, issue logging and rollback plans after go-live.",
+    src: "Test early and often · Rule of thumb"
+  },
+  {
+    q: "A company's policy documents change every month and answers must match them exactly. Which technique fits best?",
+    options: [
+      "Fine-tuning the model on the current policies",
+      "Retrieval-augmented generation (RAG)",
+      "Increasing the context window with as many tokens as possible",
+      "Relying on the model's pretrained memory"
+    ],
+    answer: 1,
+    why: "RAG pulls from authoritative, dynamic content, which is ideal when answers must align with changing internal policy. Fine-tuning is not ideal for content that changes regularly, and adding more tokens rarely helps when context is noisy or weak.",
+    src: "Be smarter with inputs to get better outputs"
+  },
+  {
+    q: "What is an \"atomic agent\" in the chapter's build-vs-buy discussion?",
+    options: [
+      "An agent that runs on a single server and cannot communicate with others",
+      "A very large agent that handles an entire business process alone",
+      "An agent focused on one specific task (e.g. form-filling or summarization) that can be reused across workflows",
+      "An agent that acts without any guardrails"
+    ],
+    answer: 2,
+    why: "Atomic agents each do one task and are assembled with orchestrator and compliance agents into larger workflows. The same form-filling, compliance or summarization agent can be reused across procurement, HR, sales, claims and more, hosted on a central platform.",
+    src: "Understand the buy vs. build trade-offs · Exhibit 22.4"
+  }
+];
+
+const $ = (s) => document.querySelector(s);
+const LETTERS = ["A", "B", "C", "D"];
+
+// ---- tabs ----
+function showTab(name) {
+  for (const t of ["study", "quiz"]) {
+    $("#" + t).classList.toggle("hidden", t !== name);
+    $("#tab-" + t).setAttribute("aria-selected", String(t === name));
+  }
+  window.scrollTo({ top: 0 });
+}
+$("#tab-study").onclick = () => showTab("study");
+$("#tab-quiz").onclick = () => showTab("quiz");
+$("#go-quiz").onclick = () => showTab("quiz");
+
+// ---- quiz ----
+function shuffle(a) {
+  a = a.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+let state;
+
+function start() {
+  state = {
+    i: 0,
+    score: 0,
+    log: [],
+    items: QUESTIONS.map((q) => ({
+      ...q,
+      order: shuffle(q.options.map((_, idx) => idx))
+    }))
+  };
+  renderQuestion();
+}
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+
+function renderQuestion() {
+  const body = $("#quiz-body");
+  body.replaceChildren();
+  const item = state.items[state.i];
+  const total = state.items.length;
+
+  const bar = el("div", "progress");
+  const fill = el("div");
+  fill.style.width = (state.i / total * 100) + "%";
+  bar.append(fill);
+  const meta = el("div", "meta");
+  meta.append(el("span", null, `Question ${state.i + 1} of ${total}`), el("span", null, `Score: ${state.score}`));
+  body.append(bar, meta);
+
+  const card = el("div", "card");
+  card.append(el("p", "q", item.q));
+  const opts = el("div", "opts");
+  opts.setAttribute("role", "group");
+
+  item.order.forEach((origIdx, pos) => {
+    const b = el("button", "opt");
+    b.type = "button";
+    b.append(el("span", "k", LETTERS[pos]), el("span", null, item.options[origIdx]));
+    b.onclick = () => answer(origIdx, opts, card);
+    b.dataset.orig = origIdx;
+    opts.append(b);
+  });
+  card.append(opts);
+  body.append(card);
+}
+
+function answer(chosen, opts, card) {
+  const item = state.items[state.i];
+  const ok = chosen === item.answer;
+  if (ok) state.score++;
+  state.log.push({ q: item.q, ok, right: item.options[item.answer] });
+
+  for (const b of opts.children) {
+    b.disabled = true;
+    const o = Number(b.dataset.orig);
+    if (o === item.answer) b.classList.add("correct");
+    else if (o === chosen) b.classList.add("wrong");
+    else b.classList.add("dim");
+  }
+
+  const fb = el("div", "feedback " + (ok ? "good" : "bad"));
+  fb.setAttribute("role", "status");
+  fb.append(el("strong", "t", ok ? "✓ Correct" : "✗ Not quite"));
+  if (!ok) fb.append(el("div", null, "Right answer: " + item.options[item.answer]));
+  fb.append(el("div", null, item.why), el("span", "src", "Chapter ref: " + item.src));
+  card.append(fb);
+
+  const last = state.i === state.items.length - 1;
+  const next = el("button", "btn", last ? "See results" : "Next question →");
+  next.type = "button";
+  next.onclick = () => { state.i++; last ? renderResults() : renderQuestion(); window.scrollTo({ top: 0 }); };
+  card.append(next);
+  next.focus();
+}
+
+function renderResults() {
+  const body = $("#quiz-body");
+  body.replaceChildren();
+  const total = state.items.length;
+  const pct = state.score / total;
+  const msg = pct === 1 ? "Perfect. You know this chapter."
+    : pct >= 0.6 ? "Solid. Review the ones you missed below."
+    : "Worth another pass through the Key ideas tab.";
+
+  const card = el("div", "card");
+  card.append(el("div", "tag", "Your result"), el("div", "score", `${state.score} / ${total}`), el("p", null, msg));
+
+  const list = el("ul", "review");
+  state.log.forEach((r) => {
+    const li = el("li");
+    li.append(el("span", "m " + (r.ok ? "ok" : "no"), r.ok ? "✓" : "✗"), el("span", null, r.q));
+    list.append(li);
+  });
+  card.append(list);
+
+  const again = el("button", "btn", "Try again");
+  again.type = "button";
+  again.onclick = start;
+  const study = el("button", "btn ghost", "Review key ideas");
+  study.type = "button";
+  study.onclick = () => showTab("study");
+  card.append(again, study);
+  body.append(card);
+}
+
+start();
+</script>
+</body>
+</html>
