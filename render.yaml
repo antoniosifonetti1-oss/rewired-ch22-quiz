@@ -1,0 +1,5 @@
+services:
+  - type: web
+    runtime: static
+    name: rewired-ch22-quiz
+    staticPublishPath: .
